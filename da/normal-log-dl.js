@@ -45,18 +45,12 @@ module.exports.getNormalLog= function(req,callback)
      {
          limit = parseInt(req.query.limit);
      }
-     var logVm = normalLogVM.getNormalLogVM();
-     console.log(logVm);
-     var result = mongoPaging.find(db.collection('normalLog'), {
-        limit: 2
-      });
-      console.log(result);
-      return callback(result);
-
-  /*  db.collection("normalLog").find(query, logVm).limit(limit).toArray(function(err, result) {
+    var logVm = normalLogVM.getNormalLogVM();
+    console.log(logVm);
+    db.collection("normalLog").find(query, logVm).limit(limit).toArray(function(err, result) {
     if (err) throw err;
     return callback(result);
-});*/
+});
 }
 
 //query generation for detail log
