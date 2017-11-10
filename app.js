@@ -8,17 +8,26 @@ app.use(bodyParser.json());
 var router = express.Router();
 
 //route for normal log
-router.route('/normallog')
+router.route('/normal-log')
 .get(normalLogController.normalLogGet)
 .post(normalLogController.postNormalLog)
 
 //route for normallog aggregate
-router.route('/normallog/logaggregate')
+router.route('/normal-log-summary')
 .get(normalLogController.getLogTypeAggregate)
+
+router.route('/normal-log-advance-search')
+.get(normalLogController.getAdvanceSearch)
+
 
 //router.route('/allnormal')
 //.get(normalLogController.allNormalLog)
 
 app.use('/api',router);
-app.listen(3001);
+app.listen(2001);
 console.log("Logger Listening...");
+//error handle      
+process.on('uncaughtException', function (err) {
+    // logging here, maybe?
+    console.log(err);
+});

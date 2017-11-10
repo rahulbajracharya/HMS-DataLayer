@@ -1,18 +1,41 @@
 //var mongoose =require('mongoose');
-var dbconfig = require('../configuration');
+var dbconfig = require('../core/dbconf');
 var normalLog= require('../models/normal-log-model');
 var common = require('../core/common');
 var normalLogVM = require("../models/normal-log-VM");
 var mongoPaging = require('mongo-cursor-pagination')
-//for test purpose
-//var mongodb = require('mongodb');
+var mongodb = require('mongodb');
 var MongoClient = require('mongodb').MongoClient, format = require('util').format;
+var configuration = require('../configuration');
+var url= format("mongodb://%s,%s,%s/%s?replicaSet=%s&readPreference=%s&connectTimeoutMS=30000"
+, "10.0.84.68:27017"
+, "10.0.84.68:27018"
+, "10.0.84.68:27019"
+, "data"
+, "hmsreplset"
+, "secondaryPreferred");
+
 var db;
- 
-MongoClient.connect(dbconfig.url, function(err, db1) {
+var testdb;
+var temp;
+var url1 = "mongodb://localhost/test"
+var collection = "normallogs";
+MongoClient.connect(url, function(err, db1) {
     if(err) throw err;
     db=db1;
 })
+
+//for test purpose
+//var mongodb = require('mongodb');
+//var MongoClient = require('mongodb').MongoClient, format = require('util').format;
+
+
+
+ 
+//MongoClient.connect(dbconfig.url, function(err, db1) {
+  //  if(err) throw err;
+   // db=db1;
+//})
 
 /*
 module.exports.logaggr = function (start,end,callback)
@@ -25,6 +48,11 @@ module.exports.logaggr = function (start,end,callback)
 }
 */
 /*
+
+
+
+
+
 module.exports.normalLogCount= function (back)
 {
     normalLog.find({},function(err, result){
@@ -39,28 +67,76 @@ module.exports.normalLogCount= function (back)
 module.exports.getNormalLog= function(req,callback)
 {
     var query =getLogQuery(req);
+    var sort = getSort(req);
     console.log(query);
     var limit = 0;
+    var skip = 0;
     if(req.query.limit)
      {
          limit = parseInt(req.query.limit);
      }
+     if(req.query.offset)
+     {
+        skip = parseInt(req.query.offset);
+     }
     var logVm = normalLogVM.getNormalLogVM();
-    console.log(logVm);
-    db.collection("normalLog").find(query, logVm).limit(limit).toArray(function(err, result) {
+    //console.log(logVm);
+
+    //for testing
+  /*  db.collection(collection).find(query).toArray(function(err,items){
+        console.log(items);
+        return callback(items);
+    });*/
+    db.collection(collection).find(query,logVm).skip(skip).limit(limit).sort(sort).toArray(function(err, result) {
     if (err) throw err;
+    console.log(result);
     return callback(result);
 });
+/*
+    db.collection("normallogs").find({}).toArray(function(err,items){
+        console.log(items);
+    })*/
 }
 
+
+//get sort query;
+function getSort(reqs)
+{
+    var sort ={};
+    var order;
+    if(reqs.query.sort_field && reqs.query.order)
+    {
+        order = getSortOrder(reqs.query.order);
+        query1 = { [reqs.query.sort_field]: order }
+        sort = Object.assign({},sort,query1);
+    }
+    else if(reqs.query.sort_field){
+        order = 1;
+        query1 = { [reqs.query.sort_field]: order }
+        sort = Object.assign({},sort,query1);
+    }
+    return sort;
+}
+
+//map sort order
+function getSortOrder(order)
+{
+    switch(order)
+    {
+        case "asc" : return 1;
+        case "desc" : return -1;
+    }
+}
 //query generation for detail log
 function getLogQuery(reqs)
 {
     var limit=0;
+
     var query={};
+
     if(reqs.query.user_id)
         {
-            query1 = { "meta.details.user_id" :  reqs.query.user_id };
+            query1 = { "user_id" :  reqs.query.user_id };
             query = Object.assign({},query,query1);
         }
     if(reqs.query.limit)
@@ -70,29 +146,29 @@ function getLogQuery(reqs)
      //query for timestamp range
     if(reqs.query.start && reqs.query.end)
      {
-         start = common.convertToISO(reqs.query.start);
-         end = common.convertToISO(reqs.query.end);
+         start = common.convertToISO(reqs.query.start).toISOString();
+         end = common.convertToISO(reqs.query.end).toISOString();
          query1={ timestamp:{$gte:start, $lte:end}};
          query= Object.assign({},query,query1);
      }
      else if(reqs.query.start)
      {
-         start = common.convertToISO(reqs.query.start);
+         start = common.convertToISO(reqs.query.start).toISOString();
          query1={ timestamp:{$gte:start}};
          query= Object.assign({},query,query1);
      }
      else if(reqs.query.end)
      {
-         end = common.convertToISO(reqs.query.end);
+         end = common.convertToISO(reqs.query.end).toISOString();
          query1={ timestamp:{$lte:end}};
          query= Object.assign({},query,query1);
      }
      else{
          var date =new Date();
          start = date;
-         end = common.convertToISO(date);
+         end = common.convertToISO(date).toISOString();
          start.setDate(start.getDate()-30);
-         start =common.convertToISO(start);
+         start =common.convertToISO(start).toISOString();
          query1={ timestamp:{$gte:start, $lte:end}};
          query= Object.assign({},query,query1);
      }
@@ -105,28 +181,35 @@ function getLogQuery(reqs)
         }
     if(reqs.query.trans_id)
         {
-            query1 = { "meta.details.trans_id" :  reqs.query.trans_id };
+            query1 = { "trans_id" :  reqs.query.trans_id };
             query = Object.assign({},query,query1);
         }
     if(reqs.query.trans_health_type)
         {
             var trans_health_type= parseInt(reqs.query.trans_health_type);
-            query1 = {"meta.details.trans_health_type": trans_health_type}
+            query1 = {"trans_health_type": trans_health_type}
             query = Object.assign({},query,query1);
         }
-    if(reqs.query.level)
+    if(reqs.query.status)
         {
-            query1 = {"level": reqs.query.level};
+            var status = parseInt(reqs.query.status);
+            query1 = {"status": status};
             query = Object.assign({},query,query1);
         }
     if(reqs.query.device_type)
         {
-            query1 = {"meta.details.device_type": reqs.query.device_type}
+            query1 = {"device_type": reqs.query.device_type}
             query = Object.assign({},query,query1);         
         }
     if(reqs.query.service_type)
         {
-            query1 = {"meta.details.service_type": reqs.query.service_type}
+            query1 = {"service_type": reqs.query.service_type}
+            query = Object.assign({},query, query1);
+        }
+        if(reqs.query.system_type)
+        {
+            system_type = parseInt(reqs.query.system_type);
+            query1= {"system_type":system_type}
             query = Object.assign({},query, query1);
         }
         return query;
@@ -142,30 +225,58 @@ module.exports.logTypeCount =function (start, end, callback)
  });*/
 
  //test
+
  module.exports.logTypeCount = function (time, callback)
  {
      var normlog = normalLog;
-     db.collection("normalLog").aggregate( [ { $match: { "timestamp" : {$gte: time.start, $lte: time.end}}}, { $group :
-         { _id : "$meta.details.trans_id", count:{$sum : 1} } } ] ).toArray(function(err,result){
+     db.collection(collection).aggregate( [ { $match: { "timestamp" : {$gte: time.start, $lte: time.end}}}, { $group :
+         { _id : "$status", count:{$sum : 1} } } ] ).toArray(function(err,result){
       if(err) throw err;
-    //  console.log(result);
-      return callback(result);
+     // console.log(result);
+      var final = getSummaryFormat(result);
+     // console.log(final);
+      return callback(final);
   });
 }
-  module.exports.logAggHttpCount = function (time, callback)
+
+//for strict formating of status type.
+function getSummaryFormat(result)
+{
+    var obje = [{_id:2,count:0}
+    ,{_id:3,count:0}
+    ,{_id:4,count:0}
+    ,{_id:5,count:0}
+    ,{_id:6,count:0}
+    ,{_id:7,count:0}
+    ]
+    //todo-refactor
+    var origLength = obje.length;
+    var updatingLength = result.length;
+    for(i = origLength-1; i >= 0; i--) {
+        for(j = updatingLength -1; j >= 0; j--) {
+        if(obje[i]._id === result[j]._id) {
+            obje[i] = result[j];
+        }
+      }
+    }
+    return obje;
+}
+
+module.exports.logAggHttpCount = function (time, callback)
   {
       var normlog = normalLog;
-     db.collection("httpLog").aggregate( [ { $match: { "timestamp" : {$gte: time.start, $lte: time.end}}}, { $group :
+      return callback(100); //testdata
+   /*  db.collection("httpLog").aggregate( [ { $match: { "timestamp" : {$gte: time.start, $lte: time.end}}}, { $group :
         { _id : "$meta.details.trans_id"} } ] ).toArray(function(err,result){
         if (err) throw err;
         return callback(result.length);
       } );
-   
+   */
   }
   module.exports.logAggNormCount = function(time,callback)
   {
       var normlog= normalLog;
-     db.collection("normalLog").find({$and:[{$or:[{"status" : "5"}, {"status" : "6"}]},{ timestamp:{$gte:time.start, $lte:time.end}}]}).count(function(err,result){
+     db.collection(collection).find({$and:[{$or:[{"status" : 5}, {"status" : 6}]},{ timestamp:{$gte:time.start, $lte:time.end}}]}).count(function(err,result){
           if (err) throw err;
           return callback(result);
       });

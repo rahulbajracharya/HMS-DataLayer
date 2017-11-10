@@ -17,7 +17,7 @@ var testModal = [
 ]
 
 //select test or final
-var modal = testModal;
+var modal = finalModal;
 
 
 //return normalLop view modal;

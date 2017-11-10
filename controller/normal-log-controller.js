@@ -8,7 +8,15 @@ exports.normalLogGet = function (req,res)
         res.status(200).send({'status':'200','data':result});
         //res.json(result);
     })
-  console.log("GET /api/normlog: Normal Log requested.");
+  console.log("GET /api/normal-log: Normal Log requested.");
+}
+
+//export function for advance-search
+exports.getAdvanceSearch = function (req, res){
+    normalLogBl.normalLog(req, function(result){
+        res.status(200).send({'status':'200','data':result});
+    });
+    console.log("GET /api/normal-log-advance-search")
 }
 
 //post Normal Log

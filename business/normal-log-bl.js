@@ -1,11 +1,13 @@
 var normalLogdl = require('../da/normal-log-dl');
 var common = require('../core/common');
 
+
+//export function for normal Log deatils
 module.exports.normalLog =function (req, callback)
 {
     normalLogdl.getNormalLog(req,function(result){
         return callback(result);
-    })
+    });
 
 }
 
@@ -47,7 +49,7 @@ module.exports.getLogTypeCount = function(req, cb){
                     data1.count=data[i].count;
                     newdata.push(data1);
                 }
-            console.log(newdata);   
+          //  console.log(newdata);   
             var final = changeToDefault(newdata);
             return cb(final);  
           });
@@ -62,10 +64,10 @@ module.exports.getLogTypeCount = function(req, cb){
 function createSuccessObject(data,data1)
 {
     count = data-data1;
-    console.log(count);
+   // console.log(count);
     var success= new Object;
     success.id=0;
-    success.type="success";
+    success.type="Success";
     success.count=count;
     return success;
 }
@@ -76,25 +78,25 @@ function checkDateRange(reqs)
     var start;var end;
     if(reqs.query.start && reqs.query.end)
     {
-        start = common.convertToISO(reqs.query.start);
-        end = common.convertToISO(reqs.query.end);
+        start = common.convertToISO(reqs.query.start).toISOString();
+        end = common.convertToISO(reqs.query.end).toISOString();
       
     }
     else if(reqs.query.start)
     {
-        start = common.convertToISO(reqs.query.start);
+        start = common.convertToISO(reqs.query.start).toISOString();;
       
     }
     else if(reqs.query.end)
     {
-        end = common.convertToISO(reqs.query.end);
+        end = common.convertToISO(reqs.query.end).toISOString();;
     }
     else{
         var date =new Date();
         start = date;
-        end = common.convertToISO(date);
+        end = common.convertToISO(date).toISOString();;
         start.setDate(start.getDate()-30);
-        start =common.convertToISO(start);
+        start =common.convertToISO(start).toISOString();;
        
     }
     var time = {
@@ -120,10 +122,10 @@ function changeToDefault(obj)
     defaults.push(one);
     defaults.push(two);
     defaults.push(three);
-    console.log(one);
-    console.log(two);
-    console.log(three);
-    console.log(defaults);
+   // console.log(one);
+   // console.log(two);
+   // console.log(three);
+   // console.log(defaults);
     return defaults;
     
 }
@@ -134,13 +136,13 @@ function LogTypeParse(type)
 {
     switch(type)
     {
-    case '001': return "All";
-    case '002': return "Debug";
-    case '003': return "Info";
-    case '4': return "Warning";
-    case '5': return "Error";
-    case '6': return "Fatal";
-    case '7': return "Off";
+    case 1: return "All";
+    case 2: return "Debug";
+    case 3: return "Info";
+    case 4: return "Warning";
+    case 5: return "Error";
+    case 6: return "Fatal";
+    case 7: return "Off";
     }
     return "None";
 }
