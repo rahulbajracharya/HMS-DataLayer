@@ -20,8 +20,13 @@ var testModal = [
 var modal = finalModal;
 
 
-//return normalLop view modal;
+//return normalLog view modal;
 module.exports.getNormalLogVM = function()
+{
+  return generateModal();
+}
+
+module.exports.getLogVM = function()
 {
   return generateModal();
 }

@@ -13,7 +13,7 @@ exports.normalLogGet = function (req,res)
 
 //export function for advance-search
 exports.getAdvanceSearch = function (req, res){
-    normalLogBl.normalLog(req, function(result){
+    normalLogBl.normalLogAdvanceSearch(req, function(result){
         res.status(200).send({'status':'200','data':result});
     });
     console.log("GET /api/normal-log-advance-search")

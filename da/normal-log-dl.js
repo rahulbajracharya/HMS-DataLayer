@@ -3,7 +3,8 @@ var dbconfig = require('../core/dbconf');
 var normalLog= require('../models/normal-log-model');
 var common = require('../core/common');
 var normalLogVM = require("../models/normal-log-VM");
-var mongoPaging = require('mongo-cursor-pagination')
+var mongoPaging = require('mongo-cursor-pagination');
+var queryBuilder =require('../core/query-mapper');
 var mongodb = require('mongodb');
 var MongoClient = require('mongodb').MongoClient, format = require('util').format;
 var configuration = require('../configuration');
@@ -21,7 +22,7 @@ var temp;
 var url1 = "mongodb://localhost/test"
 var collection = "normallogs";
 MongoClient.connect(url, function(err, db1) {
-    if(err) throw err;
+     if(err) throw err;
     db=db1;
 })
 
@@ -62,6 +63,57 @@ module.exports.normalLogCount= function (back)
         return back(result);
     })
 }*/
+
+
+//advance search result
+module.exports.advanceSearchResult = function (req, callback)
+{
+    var condition = JSON.parse(req.query.condition);
+    var query = {};
+    queryBuilder.queryMapper(condition.data, function (results){
+        console.log(results);
+        var queryReq = getQueryReq(req);
+        executeQuery(results,queryReq,function(data){
+            return callback(data); 
+        });
+    });
+}
+
+//execute query
+function executeQuery(query, queryReq)
+{
+    console.log(query + queryReq.columns + queryReq.skip + queryReq.limit + queryReq.sort);
+    db.collection(collection).find(queryReq.query,queryReq.columns).skip(queryReq.skip).limit(queryReq.limit).sort(queryReq.sort).toArray(function(err, result) {
+        if (err) throw err;
+        console.log(result);
+        return result;
+    })
+}
+
+//get query requirements
+function getQueryReq(req)
+{
+    var queryReq={};
+    var sort = getSort(req);
+    var limit = 0;
+    var skip = 0;
+    if(req.query.limit)
+     {
+         limit = parseInt(req.query.limit);
+     }
+     if(req.query.offset)
+     {
+        skip = parseInt(req.query.offset);
+     }
+    var logVm = normalLogVM.getNormalLogVM();
+    queryReq ={
+        "sort": sort,
+        "limit": limit,
+        "skip": skip,
+        "columns": logVm
+    }
+    return queryReq;
+}
 
 //get detail log
 module.exports.getNormalLog= function(req,callback)
@@ -130,8 +182,6 @@ function getSortOrder(order)
 //query generation for detail log
 function getLogQuery(reqs)
 {
-    var limit=0;
-
     var query={};
 
     if(reqs.query.user_id)

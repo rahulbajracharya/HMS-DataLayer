@@ -2,6 +2,7 @@
 var express= require('express');
 var bodyParser = require('body-parser');
 var normalLogController = require('./controller/normal-log-controller');
+var httpLogController = require("./controller/http-log-controller");
 var app = express();
 
 app.use(bodyParser.json());
@@ -18,6 +19,10 @@ router.route('/normal-log-summary')
 
 router.route('/normal-log-advance-search')
 .get(normalLogController.getAdvanceSearch)
+
+
+router.route('/http-log')
+.get(httpLogController.httpLogGet)
 
 
 //router.route('/allnormal')
