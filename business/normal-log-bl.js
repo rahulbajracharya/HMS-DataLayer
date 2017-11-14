@@ -1,6 +1,6 @@
 var normalLogdl = require('../da/normal-log-dl');
 var common = require('../core/common');
-var queryBuilder = require('../core/query-mapper');
+
 
 //export function for normal Log deatils
 module.exports.normalLog =function (req, callback)
@@ -64,7 +64,7 @@ module.exports.normalLogAdvanceSearch =function (req, callback)
   normalLogdl.advanceSearchResult(req, function(result){
       console.log(result);
       return callback(result);
-  })
+  });
 }
 
 

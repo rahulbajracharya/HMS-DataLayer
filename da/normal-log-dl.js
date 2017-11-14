@@ -69,25 +69,24 @@ module.exports.normalLogCount= function (back)
 module.exports.advanceSearchResult = function (req, callback)
 {
     var condition = JSON.parse(req.query.condition);
-    var query = {};
-    queryBuilder.queryMapper(condition.data, function (results){
-        console.log(results);
+    queryBuilder.queryMapper(condition.data, function (query){
+        console.log(query);
         var queryReq = getQueryReq(req);
-        executeQuery(results,queryReq,function(data){
-            return callback(data); 
-        });
+         module.executeQuery(query,queryReq,function(data){
+            return callback(data);
+        })
     });
 }
 
 //execute query
-function executeQuery(query, queryReq)
+module.executeQuery = function (query, queryReq, callback)
 {
-    console.log(query + queryReq.columns + queryReq.skip + queryReq.limit + queryReq.sort);
-    db.collection(collection).find(queryReq.query,queryReq.columns).skip(queryReq.skip).limit(queryReq.limit).sort(queryReq.sort).toArray(function(err, result) {
+   // console.log(query + queryReq.columns + queryReq.skip + queryReq.limit + queryReq.sort);
+    db.collection(collection).find(query,queryReq.columns).skip(queryReq.skip).limit(queryReq.limit).sort(queryReq.sort).toArray(function(err, result) {
         if (err) throw err;
-        console.log(result);
-        return result;
-    })
+       // console.log(result);
+        return callback(result);
+    });
 }
 
 //get query requirements
