@@ -1,12 +1,13 @@
-var normalLogVM = require("../models/normal-log-VM");
-var httpLogVM = require("../models/http-log-VM");
+var dbconfig = require("../core/dbconf");
+var start = dbconfig.getdb();
 
-
-exports.getQueryReq = function(req, collectionVM)
+//get limit,sortorder,offset,limit columns
+exports.getQueryReq = function(req)
 {
     var queryReq = {};
     var sort = getSort(req);
-    console.log(query);
+    var fields = getFields(req);
+    //console.log(query);
     var limit = 0;
     var skip = 0;
     if(req.query.limit)
@@ -17,23 +18,35 @@ exports.getQueryReq = function(req, collectionVM)
     {
         skip = parseInt(req.query.offset);
     }
-    var vm = collectionVM.getLogVM();
     queryReq = {
         "limit" :limit,
         "sort" :sort,
         "skip" :skip,
-        "columns": vm
+        "fields": fields
     }
     return queryReq;
 }
 
-module.exports.executeQuery = function(query, queryReq, collection)
+
+module.exports.getCount = function(collection,callback)
 {
-    db.collection(collection).find(queryReq.query,queryReq.columns).skip(queryReq.skip).limit(queryReq.limit).sort(queryReq.sort).toArray(function(err, result) {
+    var db = dbconfig.db();
+    db.collection(collection).find().count(function(err,result){
+        if(err) throw err;
+        return callback(result);
+    });
+}
+
+//execute Mongoquery
+module.exports.executeQuery = function (query, queryReq, collection, callback)
+{
+    var db = dbconfig.db();
+   // console.log(query + queryReq.columns + queryReq.skip + queryReq.limit + queryReq.sort);
+     db.collection(collection).find(query,queryReq.fields).skip(queryReq.skip).limit(queryReq.limit).sort(queryReq.sort).toArray(function(err, result) {
         if (err) throw err;
-        console.log(result);
-        return result;
-    })
+       // console.log(result);
+        return callback(result);
+    });
 }
 
 function getSort(reqs)
@@ -53,6 +66,21 @@ function getSort(reqs)
     }
     return sort;
 }
+
+function getFields(req)
+{
+ var obj={};
+ if(req.query.fields && req.query.fields!="")
+ {
+    var a = req.query.fields.split(",");
+    for(i=0;i<a.length;i++)
+        {
+             obj[a[i]] = 1;
+        }
+}
+ return obj;
+}
+
 
 //map sort order
 function getSortOrder(order)

@@ -8,31 +8,14 @@ module.exports.normalLog =function (req, callback)
     normalLogdl.getNormalLog(req,function(result){
         return callback(result);
     });
-
 }
 
-/*
-//getLogAdd
-module.exports.getLogAgg = function(req, callback){
-    start = common.convertToISO(reqs.query.start);
-    end = common.convertToISO(reqs.query.end);
-    normalLogdl.logaggr(start, end, function (result){
+module.exports.normalLogTotalCount = function(callback)
+{
+    normalLogdl.totalNormalLogCount(function(result){
         return callback(result);
     })
 }
-
-
-
-module.exports.getAllNormalLog = function(req,callback){
-    start = common.convertToISO(req.query.start);
-    end = common.convertToISO(req.query.end);
-    normalLogdl.normalLogCount(start, end, function(err, data){
-        if(err) throw err;
-        return callback(data);
-    })
-}
-*/
-
 //returns Log level Type count
 module.exports.getLogTypeCount = function(req, cb){
    var time = checkDateRange(req);
@@ -58,7 +41,6 @@ module.exports.getLogTypeCount = function(req, cb){
   
 }
 
-//test
 module.exports.normalLogAdvanceSearch =function (req, callback)
 {
   normalLogdl.advanceSearchResult(req, function(result){
@@ -84,20 +66,20 @@ function createSuccessObject(data,data1)
 function checkDateRange(reqs)
 {
     var start;var end;
-    if(reqs.query.start && reqs.query.end)
+    if(reqs.query.start_date && reqs.query.end_date)
     {
-        start = common.convertToISO(reqs.query.start).toISOString();
-        end = common.convertToISO(reqs.query.end).toISOString();
+        start = common.convertToISO(reqs.query.start_date).toISOString();
+        end = common.convertToISO(reqs.query.end_date).toISOString();
       
     }
-    else if(reqs.query.start)
+    else if(reqs.query.start_date)
     {
-        start = common.convertToISO(reqs.query.start).toISOString();;
+        start = common.convertToISO(reqs.query.start_date).toISOString();;
       
     }
-    else if(reqs.query.end)
+    else if(reqs.query.end_date)
     {
-        end = common.convertToISO(reqs.query.end).toISOString();;
+        end = common.convertToISO(reqs.query.end_date).toISOString();;
     }
     else{
         var date =new Date();

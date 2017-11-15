@@ -1,63 +1,77 @@
 var convertToISO = require("../core/common");
-var commonDa = require("../da/da-common");
+var commondb = require("../da/da-common");
+var queryBuilder =require("../core/query-mapper");
 var collection = "httplogs";
 
-
+//httplog detail
 module.exports.getHttpLogs= function(req,callback)
-{
-    var vm = "httpLogVM";
+{    
     var query =getHttpLogQuery(req);
-    var queryReq = commonDa.getQueryReq(req,vm);
-    commonDa.executeQuery(query,queryReq,collection,function(result){
-        console.write(result);
+    var queryReq = commondb.getQueryReq(req);
+    commondb.executeQuery(query,queryReq,collection,function(result){
+       // console.write(result);
         return callback(result);
-    })
-    //for testing
-  /*  db.collection(collection).find(query).toArray(function(err,items){
-        console.log(items);
-        return callback(items);
-    });*/
+    });
 }
+//httplog advancesearch
+module.exports.advanceSearchResult = function (req, callback)
+{
+    var condition = JSON.parse(req.query.condition);
+    queryBuilder.queryMapper(condition.data, function (query){
+        console.log(query);
+        var queryReq = commondb.getQueryReq(req);
+         commondb.executeQuery(query,queryReq,collection,function(data){
+            return callback(data);
+        })
+    });
+}
+
+module.exports.totalHttpLogCount = function (callback)
+{
+  commondb.getCount(collection,function(result){
+      return callback(result);
+  })
+}
+
 
 //query generation for Http detail log
 function getHttpLogQuery(reqs)
 {
     var query={};
-
     if(reqs.query.user_id)
         {
             query1 = { "user_id" :  reqs.query.user_id };
             query = Object.assign({},query,query1);
         }
         //query for timestamp range
-    if(reqs.query.start && reqs.query.end)
+    if(reqs.query.start_date && reqs.query.end_date)
      {
-         start = common.convertToISO(reqs.query.start).toISOString();
-         end = common.convertToISO(reqs.query.end).toISOString();
-         query1={ timestamp:{$gte:start, $lte:end}};
+         start_date = common.convertToISO(reqs.query.start_date).toISOString();
+         end_date = common.convertToISO(reqs.query.end_date).toISOString();
+         query1={ timestamp:{$gte:start_date, $lte:end_date}};
          query= Object.assign({},query,query1);
      }
-     else if(reqs.query.start)
+    else if(reqs.query.start_date)
      {
-         start = common.convertToISO(reqs.query.start).toISOString();
-         query1={ timestamp:{$gte:start}};
+         start_date = common.convertToISO(reqs.query.start_date).toISOString();
+         query1={ timestamp:{$gte:start_date}};
          query= Object.assign({},query,query1);
      }
-     else if(reqs.query.end)
+    else if(reqs.query.end_date)
      {
-         end = common.convertToISO(reqs.query.end).toISOString();
-         query1={ timestamp:{$lte:end}};
+         end_date = common.convertToISO(reqs.query.end_date).toISOString();
+         query1={ timestamp:{$lte:end_date}};
          query= Object.assign({},query,query1);
      }
-     else{
+    else{
          var date =new Date();
-         start = date;
-         end = common.convertToISO(date).toISOString();
-         start.setDate(start.getDate()-30);
-         start =common.convertToISO(start).toISOString();
-         query1={ timestamp:{$gte:start, $lte:end}};
+         start_date = date;
+         end_date = common.convertToISO(date).toISOString();
+         start_date.setDate(start_date.getDate()-30);
+         start_date =common.convertToISO(start_date).toISOString();
+         query1={ timestamp:{$gte:start_date, $lte:end_date}};
          query= Object.assign({},query,query1);
-     }
+    }
      ///
     if(reqs.query.log_id)
         {

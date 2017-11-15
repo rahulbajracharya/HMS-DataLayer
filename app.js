@@ -11,7 +11,7 @@ var router = express.Router();
 //route for normal log
 router.route('/normal-log')
 .get(normalLogController.normalLogGet)
-.post(normalLogController.postNormalLog)
+
 
 //route for normallog aggregate
 router.route('/normal-log-summary')
@@ -23,6 +23,9 @@ router.route('/normal-log-advance-search')
 
 router.route('/http-log')
 .get(httpLogController.httpLogGet)
+
+router.route('/http-log-advance-search')
+.get(httpLogController.getAdvanceSearch)
 
 
 //router.route('/allnormal')
