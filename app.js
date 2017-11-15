@@ -17,6 +17,7 @@ router.route('/normal-log')
 router.route('/normal-log-summary')
 .get(normalLogController.getLogTypeAggregate)
 
+//router for normal advance search
 router.route('/normal-log-advance-search')
 .get(normalLogController.getAdvanceSearch)
 
