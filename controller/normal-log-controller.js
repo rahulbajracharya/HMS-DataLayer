@@ -35,23 +35,7 @@ exports.getAdvanceSearch = function (req, res){
    
 }
 
-//post Normal Log
-exports.postNormalLog = function(req,res)
-{
-    var data =req.body.data;
-    var headers = req.header.toString('utf8');
-
-    logger.addNormLog(data, function (err,result){
-        if(err){
-            throw err;
-        }
-    })
-    console.log("POST /api/normlog: Normal Log added.");
-    res.status(201).send({'status':'201', 'message':'Normal Log added successfully'});
-  //  res.status(201).set('normlLog','/api/normlog/'+req.body).end();
-} 
-
-
+//export function for log aggregate
 exports.getLogTypeAggregate = function (req,res)
 {
     normalLogBl.getLogTypeCount(req, function(result){
