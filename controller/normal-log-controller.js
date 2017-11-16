@@ -1,4 +1,3 @@
-
 var normalLogBl = require('../business/normal-log-bl');
 
 //get Normal Log
@@ -15,8 +14,7 @@ exports.normalLogGet = function (req,res)
         res.status(200).send({'status':'200','data':result});
         }
         console.log("GET /api/normal-log: Normal Log requested.");
-        //res.json(result);
-    })
+    });
 
 }
 
@@ -42,8 +40,7 @@ exports.postNormalLog = function(req,res)
 {
     var data =req.body.data;
     var headers = req.header.toString('utf8');
-  //  console.log(data);
-   // console.log(headers);
+
     logger.addNormLog(data, function (err,result){
         if(err){
             throw err;
@@ -62,19 +59,3 @@ exports.getLogTypeAggregate = function (req,res)
     })
     console.log("GET /api/normallog/logaggregate: Normal Log Aggregate for different status type Requested");
 }
-
-/*
-exports.getNormalLog = function(req,res)
-{
-  
-}
-/*
-exports.allNormalLog =function(req,res)
-{
-    normalLogBl.getAllNormalLog(req, function(err,result){
-        if(err) throw err;
-        res.status(200).send({'status':'200','data':result});
-    })
-    console.log("Requested");
-}
-*/
