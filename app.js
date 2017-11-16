@@ -7,7 +7,7 @@ var app = express();
 
 app.use(bodyParser.json());
 var router = express.Router();
-
+//test alkdjklasd
 //route for normal log
 router.route('/normal-log')
 .get(normalLogController.normalLogGet)
