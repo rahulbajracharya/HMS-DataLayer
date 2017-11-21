@@ -3,20 +3,21 @@ var httplogdl = require('../da/http-log-dl');
 var common = require('../core/common');
 
 
-//export function for normal Log deatils
-module.exports.normalLog = function (req, callback) {
+//function for normal Log deatils
+normalLog = function (req, callback) {
     normalLogdl.getNormalLog(req, function (result) {
         return callback(result);
     });
 }
 
-module.exports.normalLogTotalCount = function (callback) {
+//normalLog Total count
+normalLogTotalCount = function (callback) {
     normalLogdl.totalNormalLogCount(function (result) {
         return callback(result);
     })
 }
 //returns Log level Type count
-module.exports.getLogTypeCount = function (req, cb) {
+getLogTypeCount = function (req, cb) {
     var time = common.checkDateRange(req);
     var newdata = [];
     httplogdl.logAggHttpCount(time, function (httpCount) {
@@ -39,7 +40,8 @@ module.exports.getLogTypeCount = function (req, cb) {
 
 }
 
-module.exports.normalLogAdvanceSearch = function (req, callback) {
+//normal-log advance search
+normalLogAdvanceSearch = function (req, callback) {
     normalLogdl.advanceSearchResult(req, function (result) {
         console.log(result);
         return callback(result);
@@ -72,3 +74,10 @@ function LogTypeParse(type) {
     return "None";
 }
 
+//public export functions
+module.exports = {
+    normalLogAdvanceSearch: normalLogAdvanceSearch
+    , getLogTypeCount: getLogTypeCount
+    , normalLogTotalCount: normalLogTotalCount
+    , normalLog: normalLog
+}

@@ -3,27 +3,28 @@ var common = require("../core/common");
 
 
 //http log details get
-module.exports.httpLogDetails = function (req, callback) {
+httpLogDetails = function (req, callback) {
     httpLogdl.getHttpLogs(req, function (result) {
         return callback(result);
     });
 }
 
 //httplog advance search.
-module.exports.httpLogAdvanceSearch = function (req, callback) {
+httpLogAdvanceSearch = function (req, callback) {
     httpLogdl.advanceSearchResult(req, function (result) {
         return callback(result)
     })
 }
 
-module.exports.httpLogTotalCount = function (callback) {
+//httplog total count
+httpLogTotalCount = function (callback) {
     httpLogdl.totalHttpLogCount(function (result) {
         return callback(result);
     })
 }
 
 //get httplog summary.
-module.exports.getHttpLogAggr = function (req, callback) {
+getHttpLogAggr = function (req, callback) {
     var newdata = [];
     var time = common.checkDateRange(req);
     httpLogdl.httpLogAggr(time, function (data) {
@@ -50,4 +51,10 @@ function LogTypeParse(type) {
     return "None";
 }
 
-///mapping to frontend
+//public export functions
+module.exports = {
+    getHttpLogAggr: getHttpLogAggr
+    , httpLogTotalCount: httpLogTotalCount
+    , httpLogAdvanceSearch: httpLogAdvanceSearch
+    , httpLogDetails: httpLogDetails
+}

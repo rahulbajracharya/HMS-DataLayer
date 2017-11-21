@@ -69,11 +69,6 @@ function getSummaryFormat(result) {
 //query generation for Http detail log
 function getHttpLogQuery(reqs) {
     var query = {};
-    /*if(reqs.query.user_id)
-        {
-            query1 = { "user_id" :  reqs.query.user_id };
-            query = Object.assign({},query,query1);
-        }*/
     //query for timestamp range
     if (reqs.query.start_date && reqs.query.end_date) {
         start_date = common.convertToISO(reqs.query.start_date).toISOString();

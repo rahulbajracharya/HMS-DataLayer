@@ -69,7 +69,7 @@ var checkDateRange = function (reqs) {
     };
     return time;
 }
-
+//exports functions
 module.exports = {
     convertToISO: convertToISO,
     checkDateRange: checkDateRange,

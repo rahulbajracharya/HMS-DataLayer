@@ -1,14 +1,12 @@
 var userDl = require("../da/user_dl");
 
-module.exports.validateUser = function (req, callback) {
+var validateUser = function (req, callback) {
     var username = req.body.data.username;
     var password = req.body.data.password;
     userDl.checkUser(username, password, function (data) {
         return callback(checkForStatus(data));
     })
 }
-
-
 checkForStatus = function (data) {
     var status;
     if (data != "User valid") {
@@ -21,4 +19,9 @@ checkForStatus = function (data) {
         'data': data
     }
     return result;
+}
+
+//export functions
+module.exports = {
+    validateUser: validateUser
 }

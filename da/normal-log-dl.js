@@ -100,17 +100,6 @@ function getLogQuery(reqs) {
     return query;
 }
 
-/*Original
-module.exports.logTypeCount =function (start, end, callback)
-{
-    var normlog = normalLog;
-    normalLog.aggregate( [ { $match: { "timestamp" : {$gte: start, $lte: end}}}, { $group : { _id : "$meta.details.trans_id", count:{$sum : 1} } } ] ).toArray(function(err,result){
-     if(err) throw err;
-     return callback(result);
- });*/
-
-//test
-
 module.exports.logTypeCount = function (time, callback) {
     var db = dbconfig.db();
     var normlog = normalLog;
