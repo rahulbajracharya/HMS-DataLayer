@@ -3,6 +3,7 @@ var express= require('express');
 var bodyParser = require('body-parser');
 var normalLogController = require('./controller/normal-log-controller');
 var httpLogController = require("./controller/http-log-controller");
+var userController = require("./controller/user-controller");
 var app = express();
 
 app.use(bodyParser.json());
@@ -25,15 +26,20 @@ router.route('/normal-log-advance-search')
 router.route('/http-log')
 .get(httpLogController.httpLogGet)
 
+router.route('/http-log-summary')
+.get(httpLogController.getHttpLogAggregate)
+
 router.route('/http-log-advance-search')
 .get(httpLogController.getAdvanceSearch)
 
+router.route('/is-user-exist')
+.post(userController.checkUserValidation)
 
 //router.route('/allnormal')
 //.get(normalLogController.allNormalLog)
 
 app.use('/api',router);
-app.listen(2001);
+app.listen(2002);
 console.log("Logger Listening...");
 //error handle      
 process.on('uncaughtException', function (err) {
