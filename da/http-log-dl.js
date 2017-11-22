@@ -14,6 +14,8 @@ module.exports.getHttpLogs = function (req, callback) {
 }
 //httplog advancesearch
 module.exports.advanceSearchResult = function (req, callback) {
+    if(req.query.condition)
+    {
     var condition = JSON.parse(req.query.condition);
     queryBuilder.queryMapper(condition.data, function (query) {
         console.log(query);
@@ -22,6 +24,10 @@ module.exports.advanceSearchResult = function (req, callback) {
             return callback(data);
         })
     });
+}
+else{
+    return callback("");
+}
 }
 //httplog count.
 module.exports.totalHttpLogCount = function (callback) {

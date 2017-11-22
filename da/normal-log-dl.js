@@ -17,6 +17,8 @@ module.exports.getNormalLog = function (req, callback) {
 
 //advance search result
 module.exports.advanceSearchResult = function (req, callback) {
+    if (req.query.condition)
+    {
     var condition = JSON.parse(req.query.condition);
     queryBuilder.queryMapper(condition.data, function (query) {
         console.log(query);
@@ -25,6 +27,10 @@ module.exports.advanceSearchResult = function (req, callback) {
             return callback(data);
         })
     });
+}
+else{
+    return callback("");
+}
 }
 
 //query generation for detail log
