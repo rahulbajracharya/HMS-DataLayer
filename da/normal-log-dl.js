@@ -17,20 +17,19 @@ module.exports.getNormalLog = function (req, callback) {
 
 //advance search result
 module.exports.advanceSearchResult = function (req, callback) {
-    if (req.query.condition)
-    {
-    var condition = JSON.parse(req.query.condition);
-    queryBuilder.queryMapper(condition.data, function (query) {
-        console.log(query);
-        var queryReq = commondb.getQueryReq(req);
-        commondb.executeQuery(query, queryReq, collection, function (data) {
-            return callback(data);
-        })
-    });
-}
-else{
-    return callback("");
-}
+    if (req.query.condition) {
+        var condition = JSON.parse(req.query.condition);
+        queryBuilder.queryMapper(condition.data, function (query) {
+            console.log(query);
+            var queryReq = commondb.getQueryReq(req);
+            commondb.executeQuery(query, queryReq, collection, function (data) {
+                return callback(data);
+            });
+        });
+    }
+    else {
+        return callback([]);
+    }
 }
 
 //query generation for detail log
@@ -146,5 +145,4 @@ module.exports.logAggNormCount = function (time, callback) {
         if (err) throw err;
         return callback(result);
     });
-
 }

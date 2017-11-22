@@ -14,20 +14,19 @@ module.exports.getHttpLogs = function (req, callback) {
 }
 //httplog advancesearch
 module.exports.advanceSearchResult = function (req, callback) {
-    if(req.query.condition)
-    {
-    var condition = JSON.parse(req.query.condition);
-    queryBuilder.queryMapper(condition.data, function (query) {
-        console.log(query);
-        var queryReq = commondb.getQueryReq(req);
-        commondb.executeQuery(query, queryReq, collection, function (data) {
-            return callback(data);
-        })
-    });
-}
-else{
-    return callback("");
-}
+    if (req.query.condition) {
+        var condition = JSON.parse(req.query.condition);
+        queryBuilder.queryMapper(condition.data, function (query) {
+            //console.log(query);
+            var queryReq = commondb.getQueryReq(req);
+            commondb.executeQuery(query, queryReq, collection, function (data) {
+                return callback(data);
+            });
+        });
+    }
+    else {
+        return callback("");
+    }
 }
 //httplog count.
 module.exports.totalHttpLogCount = function (callback) {
@@ -38,7 +37,7 @@ module.exports.totalHttpLogCount = function (callback) {
 
 module.exports.logAggHttpCount = function (time, callback) {
     var db = dbconfig.db();
-    console.log(time.start + time.end)
+    //console.log(time.start + time.end)
     db.collection(collection).find({ timestamp: { $gte: time.start, $lte: time.end } }).count(function (err, result) {
         if (err) throw err;
         return callback(result);

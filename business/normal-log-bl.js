@@ -43,7 +43,7 @@ getLogTypeCount = function (req, cb) {
 //normal-log advance search
 normalLogAdvanceSearch = function (req, callback) {
     normalLogdl.advanceSearchResult(req, function (result) {
-        console.log(result);
+        //console.log(result);
         return callback(result);
     });
 }

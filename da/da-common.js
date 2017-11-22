@@ -6,7 +6,6 @@ exports.getQueryReq = function (req) {
     var queryReq = {};
     var sort = getSort(req);
     var fields = getFields(req);
-    //console.log(query);
     var limit = 0;
     var skip = 0;
     if (req.query.limit) {
@@ -24,7 +23,7 @@ exports.getQueryReq = function (req) {
     return queryReq;
 }
 
-
+//get total count of collections
 module.exports.getCount = function (collection, callback) {
     var db = dbconfig.db();
     db.collection(collection).find().count(function (err, result) {
@@ -44,6 +43,7 @@ module.exports.executeQuery = function (query, queryReq, collection, callback) {
     });
 }
 
+//set sort field and sort order.
 function getSort(reqs) {
     var sort = {};
     var order;
@@ -60,6 +60,7 @@ function getSort(reqs) {
     return sort;
 }
 
+//make array of comma seperated fields.
 function getFields(req) {
     var obj = {};
     if (req.query.fields && req.query.fields != "") {

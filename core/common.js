@@ -11,8 +11,6 @@ var convertToISO = function (datetime1) {
 //merge obj2 with obj1
 //need to refactor
 var mergeObj = function (obj1, obj2) {
-    var obj3 = Object.assign({},obj1,obj2);
-    //console.log(obj3);
     var origLength = obj1.length;
     var updatingLength = obj2.length;
     for (i = origLength - 1; i >= 0; i--) {

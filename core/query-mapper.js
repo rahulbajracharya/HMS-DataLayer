@@ -1,12 +1,5 @@
 
 
-//check column type
-//function checkColumn(column)
-//{
-//   if(column == "")
-
-//}
-
 
 //map comparision operator
 function mapComparisionOp(comOp) {
@@ -31,7 +24,7 @@ function mapLogialOp(LogicalOp) {
 module.exports.queryMapper = function (conditions, callback) {
     var val = conditions.length - 1;
     result = generateQuery(conditions, val);
-    console.log(result);
+    //console.log(result);
     console.log(JSON.stringify(result));
     return callback(result);
 }
