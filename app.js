@@ -1,9 +1,9 @@
 //load require packages
 var express= require('express');
 var bodyParser = require('body-parser');
-var normalLogController = require('./controller/normal-log-controller');
-var httpLogController = require("./controller/http-log-controller");
-var userController = require("./controller/user-controller");
+var normalLogController = require('./query/controller/normal-log-controller');
+var httpLogController = require("./query/controller/http-log-controller");
+var userController = require("./query/controller/user-controller");
 var app = express();
 
 app.use(bodyParser.json());

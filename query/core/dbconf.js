@@ -1,6 +1,5 @@
 var mongodb = require('mongodb');
 var MongoClient = require('mongodb').MongoClient, format = require('util').format;
-var configuration = require('../configuration');
 
 var url = format("mongodb://%s,%s,%s/%s?replicaSet=%s&readPreference=%s&connectTimeoutMS=30000"
     , "10.0.84.68:27017"
