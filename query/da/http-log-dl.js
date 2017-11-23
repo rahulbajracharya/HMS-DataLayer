@@ -2,6 +2,7 @@ var common = require("../core/common");
 var commondb = require("../da/da-common");
 var queryBuilder = require("../core/query-mapper");
 var dbconfig = require("../core/dbconf");
+var request = require('request');
 var collection = "httplogs";
 
 //httplog detail
@@ -58,6 +59,24 @@ module.exports.httpLogAggr = function (time, callback) {
         return callback(final);
     });
 }
+//refactor needed
+module.exports.httpPostRequest = function(model,callback)
+{
+    request.post({
+        "headers": { "content-type": "application/json" },
+        "url": "http://10.0.84.160:3001/http",
+        "body": JSON.stringify({
+            "data": model
+        })
+    }, (error, response, body) => {
+        if(error) {
+            return console.dir(error);
+        }
+        console.dir(JSON.parse(body));
+        return callback("success");
+    });
+}
+
 
 
 //for strict formating of status type.
@@ -133,3 +152,4 @@ function getHttpLogQuery(reqs) {
     }
     return query;
 }
+

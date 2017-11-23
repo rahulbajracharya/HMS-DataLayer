@@ -36,3 +36,13 @@ exports.getAdvanceSearch = function (req, res) {
     })
 
 }
+
+
+//httpPost
+module.exports.postHttpLog =function(req)
+{
+    httpLogBl.httpLogWriteRequest(req, function(result){
+     
+    });
+}
+

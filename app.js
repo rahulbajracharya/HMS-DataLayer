@@ -33,13 +33,13 @@ router.route('/http-log-advance-search')
 .get(httpLogController.getAdvanceSearch)
 
 router.route('/is-user-exist')
-.post(userController.checkUserValidation)
+.get(userController.checkUserValidation)
 
 //router.route('/allnormal')
 //.get(normalLogController.allNormalLog)
 
 app.use('/api',router);
-app.listen(2002);
+app.listen(2001);
 console.log("Logger Listening...");
 //error handle      
 process.on('uncaughtException', function (err) {

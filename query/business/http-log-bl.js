@@ -1,5 +1,8 @@
 var httpLogdl = require("../da/http-log-dl");
+var httpModel = require("../models/http-log-model");
 var common = require("../core/common");
+var ObjectID = require('mongodb').ObjectID;
+var url = require('url');
 
 
 //http log details get
@@ -50,6 +53,43 @@ function LogTypeParse(type) {
     }
     return "None";
 }
+/************************************************************************************************/
+/*Http log write business*/
+httpLogWriteRequest = function(req, callback)
+{
+   var model = createNewHttpModel(req);
+   httpLogdl.httpPostRequest(model,function(data){
+    return callback(model);
+   });
+}
+
+function createNewHttpModel(req)
+{
+    var a =url.parse(req.headers['host']);
+    var date = new Date();
+    date = date.toISOString();
+    var model = new httpModel({
+        header: JSON.stringify(req.headers)
+        ,url: req.baseUrl +req.route.path
+        ,body: JSON.stringify(req.body)
+        ,http_verb: req.method 
+        ,trans_id: req.headers['trans_id']
+        //health status
+        ,trans_health_type: 4 
+        ,parameters: JSON.stringify(req.query)
+        ,device_type: req.headers['user-agent']
+        ,instance_type: parseInt(a.host)
+        // determine which layer: apigateway: 4, queue: 3, databaase : 2
+        ,service_type: 2
+        // determines which system logged logs
+        ,system_type: 2
+        //logged in user
+        ,user_id: req.headers['user_id']
+        ,timestamp: date
+    });
+    return model;
+}
+
 
 //public export functions
 module.exports = {
@@ -57,4 +97,5 @@ module.exports = {
     , httpLogTotalCount: httpLogTotalCount
     , httpLogAdvanceSearch: httpLogAdvanceSearch
     , httpLogDetails: httpLogDetails
+    , httpLogWriteRequest: httpLogWriteRequest
 }

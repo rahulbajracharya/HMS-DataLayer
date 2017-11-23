@@ -1,7 +1,9 @@
 var normalLogBl = require('../business/normal-log-bl');
+var httpLogController = require('../controller/http-log-controller');
 
 //get Normal Log
 exports.normalLogGet = function (req, res) {
+    httpLogController.postHttpLog(req);
     normalLogBl.normalLog(req, function (result) {
         if (req.query.count && req.query.count == "true") {
             normalLogBl.normalLogTotalCount(function (count) {
