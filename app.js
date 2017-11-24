@@ -39,7 +39,7 @@ router.route('/is-user-exist')
 //.get(normalLogController.allNormalLog)
 
 app.use('/api',router);
-app.listen(2002,'0.0.0.0');
+app.listen(2002);
 console.log("Logger Listening...");
 //error handle      
 process.on('uncaughtException', function (err) {

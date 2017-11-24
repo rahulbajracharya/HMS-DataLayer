@@ -77,7 +77,7 @@ function createNewHttpModel(req, stack) {
         , http_verb: method
         , trans_id: req.headers['trans_id']
         //health status
-        , trans_health_type: 4
+        , trans_health_type: req.headers['trans_health_type']
         , parameters: JSON.stringify(req.query)
         , device_type: req.headers['device_type']
         , instance_type: parseInt(a.host)

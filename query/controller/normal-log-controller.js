@@ -1,17 +1,16 @@
 var normalLogBl = require('../business/normal-log-bl');
 var httpLogController = require('../controller/http-log-controller');
 
+
 //get Normal Log
 exports.normalLogGet = function (req, res) {
-     httpLogController.postHttpLog(req,0); //api request log
+    httpLogController.postHttpLog(req,0); //api request log
     normalLogBl.normalLog(req, function (result) {
         if (req.query.count && req.query.count == "true") {
-            normalLogBl.normalLogTotalCount(function (count) {
-                res.status(200).send({ 'status': '200', 'data': result, 'count': count });
-            });
+                res.status(200).send({ 'status': '200', 'data': result.result, 'count': result.count });
         }
         else {
-            res.status(200).send({ 'status': '200', 'data': result });
+            res.status(200).send({ 'status': '200', 'data': result.result });
         }
         console.log("GET /api/normal-log: Normal Log requested.");
         httpLogController.postHttpLog(req,1); //api request success log
@@ -24,9 +23,8 @@ exports.getAdvanceSearch = function (req, res) {
     httpLogController.postHttpLog(req,0); //api request log
     normalLogBl.normalLogAdvanceSearch(req, function (result) {
         if (req.query.count && req.query.count == "true") {
-            normalLogBl.normalLogTotalCount(function (count) {
-                res.status(200).send({ 'status': '200', 'data': result, 'count': count });
-            });
+           
+                res.status(200).send({ 'status': '200', 'data': result.result, 'count': result.count });
         }
         else {
             res.status(200).send({ 'status': '200', 'data': result });

@@ -33,13 +33,29 @@ module.exports.getCount = function (collection, callback) {
 }
 
 //execute Mongoquery
-module.exports.executeQuery = function (query, queryReq, collection, callback) {
+module.exports.executeQuery = function (query, queryReq, collection, iscount, callback) {
     var db = dbconfig.db();
     // console.log(query + queryReq.columns + queryReq.skip + queryReq.limit + queryReq.sort);
     db.collection(collection).find(query, queryReq.fields).skip(queryReq.skip).limit(queryReq.limit).sort(queryReq.sort).toArray(function (err, result) {
         if (err) throw err;
+        if (iscount == "true") {
+            db.collection(collection).find(query).count(function (err, count) {
+                if (err) throw err;
+                var data = {
+                    "result": result,
+                    "count": count
+                }
+                return callback(data);
+            });
+        }
+        else {
+            var data = {
+                "result": result
+            }
+            return callback(data);
+        }
         // console.log(result);
-        return callback(result);
+      
     });
 }
 

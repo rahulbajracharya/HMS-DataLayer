@@ -10,7 +10,12 @@ var collection = "normallogs";
 module.exports.getNormalLog = function (req, callback) {
     var query = getLogQuery(req);
     var queryReq = commondb.getQueryReq(req);
-    commondb.executeQuery(query, queryReq, collection, function (result) {
+    var count = "false";
+    if(req.query.count && req.query.count == "true")
+    {
+        count = req.query.count;
+    }
+    commondb.executeQuery(query, queryReq, collection,count,function (result) {
         return callback(result);
     })
 }
@@ -22,7 +27,12 @@ module.exports.advanceSearchResult = function (req, callback) {
         queryBuilder.queryMapper(condition.data, function (query) {
             console.log(query);
             var queryReq = commondb.getQueryReq(req);
-            commondb.executeQuery(query, queryReq, collection, function (data) {
+            var count = "false";
+            if(req.query.count && req.query.count == "true")
+            {
+                count = req.query.count;
+            }
+            commondb.executeQuery(query, queryReq, collection,count, function (data) {
                 return callback(data);
             });
         });

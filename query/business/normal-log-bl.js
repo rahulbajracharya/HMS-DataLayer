@@ -11,8 +11,8 @@ normalLog = function (req, callback) {
 }
 
 //normalLog Total count
-normalLogTotalCount = function (callback) {
-    normalLogdl.totalNormalLogCount(function (result) {
+normalLogTotalCount = function (req, callback) {
+    normalLogdl.totalNormalLogCount(req, function (result) {
         return callback(result);
     })
 }
