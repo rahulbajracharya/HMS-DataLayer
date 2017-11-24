@@ -1,5 +1,5 @@
 
 var writeLog = {
-    "value": "true"
+    "value": "false"
 }
 module.exports.writeLog = writeLog;
