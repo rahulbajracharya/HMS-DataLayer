@@ -20,3 +20,10 @@ module.exports.getdb = function () {
         db = db1;
     })
 }
+
+var postConfig = {
+    "headers": { "content-type": "application/json" },
+    "url" : "http://10.0.84.160:3001/"
+}
+
+module.exports.postConfig = postConfig;

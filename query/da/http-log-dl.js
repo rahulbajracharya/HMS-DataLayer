@@ -4,6 +4,7 @@ var queryBuilder = require("../core/query-mapper");
 var dbconfig = require("../core/dbconf");
 var request = require('request');
 var collection = "httplogs";
+var postapi = "http";
 
 //httplog detail
 module.exports.getHttpLogs = function (req, callback) {
@@ -49,8 +50,7 @@ module.exports.logAggHttpCount = function (time, callback) {
 module.exports.httpLogAggr = function (time, callback) {
     var db = dbconfig.db();
     db.collection(collection).aggregate([{ $match: { "timestamp": { $gte: time.start, $lte: time.end } } }, {
-        $group:
-            { _id: "$service_type", count: { $sum: 1 } }
+        $group:{ _id: "$service_type", count: { $sum: 1 } }
     }]).toArray(function (err, result) {
         if (err) throw err;
         // console.log(result);
@@ -59,21 +59,19 @@ module.exports.httpLogAggr = function (time, callback) {
         return callback(final);
     });
 }
-//refactor needed
-module.exports.httpPostRequest = function(model,callback)
-{
+
+//Http log write request
+module.exports.httpPostRequest = function (model, callback) {
     request.post({
-        "headers": { "content-type": "application/json" },
-        "url": "http://10.0.84.160:3001/http",
+        "headers": dbconfig.postConfig.headers ,
+        "url": dbconfig.postConfig.url +"/"+postapi,
         "body": JSON.stringify({
             "data": model
         })
     }, (error, response, body) => {
-        if(error) {
-            return console.dir(error);
+        if (error) {
+            return console.log(error);
         }
-        console.dir(JSON.parse(body));
-        return callback("success");
     });
 }
 

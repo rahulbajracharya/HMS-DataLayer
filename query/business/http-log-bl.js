@@ -55,37 +55,39 @@ function LogTypeParse(type) {
 }
 /************************************************************************************************/
 /*Http log write business*/
-httpLogWriteRequest = function(req, callback)
-{
-   var model = createNewHttpModel(req);
-   httpLogdl.httpPostRequest(model,function(data){
-    return callback(model);
-   });
+httpLogWriteRequest = function (req, stack, callback) {
+    var model = createNewHttpModel(req, stack);
+    httpLogdl.httpPostRequest(model, function (data) {
+        return callback(model);
+    });
 }
 
-function createNewHttpModel(req)
-{
-    var a =url.parse(req.headers['host']);
-    var date = new Date();
+function createNewHttpModel(req, stack) {
+    var a = url.parse(req.headers['host']);
+    var date = new Date(); var method;
     date = date.toISOString();
+    if (stack == 0) {
+        method = req.method;
+    } else {
+        method = "ack";
+    }
     var model = new httpModel({
         header: JSON.stringify(req.headers)
-        ,url: req.baseUrl +req.route.path
-        ,body: JSON.stringify(req.body)
-        ,http_verb: req.method 
-        ,trans_id: req.headers['trans_id']
+        , url: req.baseUrl + req.route.path
+        , http_verb: method
+        , trans_id: req.headers['trans_id']
         //health status
-        ,trans_health_type: 4 
-        ,parameters: JSON.stringify(req.query)
-        ,device_type: req.headers['user-agent']
-        ,instance_type: parseInt(a.host)
+        , trans_health_type: 4
+        , parameters: JSON.stringify(req.query)
+        , device_type: req.headers['device_type']
+        , instance_type: parseInt(a.host)
         // determine which layer: apigateway: 4, queue: 3, databaase : 2
-        ,service_type: 2
+        , service_type: 2
         // determines which system logged logs
-        ,system_type: 2
+        , system_type: req.headers['system_type']
         //logged in user
-        ,user_id: req.headers['user_id']
-        ,timestamp: date
+        , user_id: req.headers['user_id']
+        , timestamp: date
     });
     return model;
 }
