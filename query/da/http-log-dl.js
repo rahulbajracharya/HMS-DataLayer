@@ -151,11 +151,11 @@ function getHttpLogQuery(reqs) {
         query = Object.assign({}, query, query1);
     }
     if (reqs.query.instance_type) {
-        query1 = { "instance_type": req.query.instance_type };
+        query1 = { "instance_type": reqs.query.instance_type };
         query = Object.assign({}, query, query1);
     }
     if (reqs.query.http_verb) {
-        query1 = { "http_verb": req.query.http_verb };
+        query1 = { "http_verb": reqs.query.http_verb };
         query = Object.assign({}, query, query1);
     }
     return query;
