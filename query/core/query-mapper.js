@@ -10,6 +10,7 @@ function mapComparisionOp(comOp) {
         case "<": return "$lt"; //less than
         case "<=": return "$lte"; //less than & equal to
         case "<>": return "$ne"; //not equal to
+        case "LIKE": return "$regex"; //Like
     }
 }
 
@@ -29,11 +30,25 @@ module.exports.queryMapper = function (conditions, callback) {
     return callback(result);
 }
 
+function appendToValue(value)
+{
+    var reg = new RegExp(value, "i");
+    console.log(reg);
+    return reg //reg;
+}
+
 //generate query for Mongo
 function generateQuery(condition, val) {
     var columns = condition[val].column;
-    var op = mapComparisionOp(condition[val].operator);
-    var value = condition[val].value;
+    var op = mapComparisionOp(condition[val].operator);1
+    var value;
+    if(op=="$regex")
+    {
+        value = appendToValue(condition[val].value);
+    }
+    else{
+        value = condition[val].value;
+    }
     var logical;
     if (val == 0) {
         return result = { [columns]: { [op]: value } };

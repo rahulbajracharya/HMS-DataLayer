@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var normalLogController = require('./query/controller/normal-log-controller');
 var httpLogController = require("./query/controller/http-log-controller");
 var userController = require("./query/controller/user-controller");
+var healthController = require("./query/controller/health-controller");
 var app = express();
 
 app.use(bodyParser.json());
@@ -35,11 +36,13 @@ router.route('/http-log-advance-search')
 router.route('/is-user-exist')
 .get(userController.checkUserValidation)
 
+router.route('/health')
+.get(healthController.healthStatus)
 //router.route('/allnormal')
 //.get(normalLogController.allNormalLog)
 
 app.use('/api',router);
-app.listen(2002, '0.0.0.0');
+app.listen(2002);
 console.log("Logger Listening...");
 //error handle      
 process.on('uncaughtException', function (err) {
