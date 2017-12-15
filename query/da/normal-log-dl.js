@@ -1,4 +1,3 @@
-
 var normalLog = require('../models/normal-log-model');
 var common = require('../core/common');
 var mongoPaging = require('mongo-cursor-pagination');
@@ -28,11 +27,12 @@ module.exports.advanceSearchResult = function (req, callback) {
             console.log(query);
             var queryReq = commondb.getQueryReq(req);
             var count = "false";
+            var finalquery = getLogQuery(req, query); //added for extra reqs
             if(req.query.count && req.query.count == "true")
             {
                 count = req.query.count;
             }
-            commondb.executeQuery(query, queryReq, collection,count, function (data) {
+            commondb.executeQuery(finalquery, queryReq, collection,count, function (data) {
                 return callback(data);
             });
         });
@@ -43,8 +43,8 @@ module.exports.advanceSearchResult = function (req, callback) {
 }
 
 //query generation for detail log
-function getLogQuery(reqs) {
-    var query = {};
+//value for query is {} for default for httplog request  
+function getLogQuery(reqs, query = {}) {
 
     if (reqs.query.user_id) {
         query1 = { "user_id": reqs.query.user_id };
@@ -71,13 +71,15 @@ function getLogQuery(reqs) {
         query = Object.assign({}, query, query1);
     }
     else {
-        var date = new Date();
+        if(JSON.stringify(query)=="{}") // only define default timestamp when query object is empty
+        {var date = new Date();
         start_date = date;
         end_date = common.convertToISO(date).toISOString();
         start_date.setDate(start_date.getDate() - 30);
         start_date = common.convertToISO(start_date).toISOString();
         query1 = { timestamp: { $gte: start_date, $lte: end_date } };
         query = Object.assign({}, query, query1);
+        }
     }
     ///
     if (reqs.query.log_id) {

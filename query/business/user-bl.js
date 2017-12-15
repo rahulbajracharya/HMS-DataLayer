@@ -12,18 +12,18 @@ var validateUser = function (req, callback) {
 }
 checkForStatus = function (data) {
     var status;
-    if (data != "User valid") {
+    if (data.message != "User valid") {
         status = 403;
     } else {
         status = 200;
     }
     var result = {
         'status': status,
-        'data': data
+        'message': data.message,
+        'data' : data
     }
     return result;
 }
-
 //export functions
 module.exports = {
     validateUser: validateUser

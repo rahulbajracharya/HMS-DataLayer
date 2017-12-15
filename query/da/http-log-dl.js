@@ -9,13 +9,14 @@ var postapi = "http";
 //httplog detail
 module.exports.getHttpLogs = function (req, callback) {
     var query = getHttpLogQuery(req);
+    console.log(query);
     var queryReq = commondb.getQueryReq(req);
+    
     var count = "false";
-    if(req.query.count && req.query.count == "true")
-    {
+    if (req.query.count && req.query.count == "true") {
         count = req.query.count;
     }
-    commondb.executeQuery(query, queryReq, collection,count, function (result) {
+    commondb.executeQuery(query, queryReq, collection, count, function (result) {
         return callback(result);
     });
 }
@@ -27,11 +28,12 @@ module.exports.advanceSearchResult = function (req, callback) {
             //console.log(query);
             var queryReq = commondb.getQueryReq(req);
             var count = "false";
-            if(req.query.count && req.query.count == "true")
-            {
+            var finalquery = getHttpLogQuery(req, query); //added for extra reqs
+            //console.log(finalquery);
+            if (req.query.count && req.query.count == "true") {
                 count = req.query.count;
             }
-            commondb.executeQuery(query, queryReq, collection,count, function (data) {
+            commondb.executeQuery(finalquery, queryReq, collection, count, function (data) {
                 return callback(data);
             });
         });
@@ -60,7 +62,7 @@ module.exports.logAggHttpCount = function (time, callback) {
 module.exports.httpLogAggr = function (time, callback) {
     var db = dbconfig.db();
     db.collection(collection).aggregate([{ $match: { "timestamp": { $gte: time.start, $lte: time.end } } }, {
-        $group:{ _id: "$service_type", count: { $sum: 1 } }
+        $group: { _id: "$service_type", count: { $sum: 1 } }
     }]).toArray(function (err, result) {
         if (err) throw err;
         // console.log(result);
@@ -73,8 +75,8 @@ module.exports.httpLogAggr = function (time, callback) {
 //Http log write request
 module.exports.httpPostRequest = function (model, callback) {
     request.post({
-        "headers": dbconfig.postConfig.headers ,
-        "url": dbconfig.postConfig.url +"/"+postapi,
+        "headers": dbconfig.postConfig.headers,
+        "url": dbconfig.postConfig.url + "/" + postapi,
         "body": JSON.stringify({
             "data": model
         })
@@ -99,8 +101,8 @@ function getSummaryFormat(result) {
 
 
 //query generation for Http detail log
-function getHttpLogQuery(reqs) {
-    var query = {};
+//value for query is {} for default for httplog request  
+function getHttpLogQuery(reqs, query = {}) {
     //query for timestamp range
     if (reqs.query.start_date && reqs.query.end_date) {
         start_date = common.convertToISO(reqs.query.start_date).toISOString();
@@ -119,13 +121,16 @@ function getHttpLogQuery(reqs) {
         query = Object.assign({}, query, query1);
     }
     else {
-        var date = new Date();
-        start_date = date;
-        end_date = common.convertToISO(date).toISOString();
-        start_date.setDate(start_date.getDate() - 30);
-        start_date = common.convertToISO(start_date).toISOString();
-        query1 = { timestamp: { $gte: start_date, $lte: end_date } };
-        query = Object.assign({}, query, query1);
+        if (JSON.stringify(query)=="{}") // only define default timestamp when query object is empty
+        {
+            var date = new Date();
+            start_date = date;
+            end_date = common.convertToISO(date).toISOString();
+            start_date.setDate(start_date.getDate() - 30);
+            start_date = common.convertToISO(start_date).toISOString();
+            query1 = { timestamp: { $gte: start_date, $lte: end_date } };
+            query = Object.assign({}, query, query1);
+        }
     }
     ///
     if (reqs.query.trans_id) {
@@ -161,3 +166,10 @@ function getHttpLogQuery(reqs) {
     return query;
 }
 
+Object.prototype.isEmpty = function() {
+    for(var key in this) {
+        if(this.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}

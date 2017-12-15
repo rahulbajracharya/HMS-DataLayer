@@ -1,6 +1,3 @@
-
-
-
 //map comparision operator
 function mapComparisionOp(comOp) {
     switch (comOp) {
