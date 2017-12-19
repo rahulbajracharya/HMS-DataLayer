@@ -2,7 +2,7 @@ var userDl = require("../da/user_dl");
 var base64 = require('base-64');
 
 var validateUser = function (req, callback) {
-    var authorizaton = base64.decode(req.query.authorization);
+    var authorizaton = base64.decode(req.headers.authorization);
     var data = authorizaton.split(":");
     var username = data[0];
     var password = data[1]
